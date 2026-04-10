@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Site Murilo Otávio</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+  <style>
+    body {
+      background: #0f0f1a;
+      color: #e0e0f0;
+      font-family: 'Segoe UI', sans-serif;
+      min-height: 100vh;
+    }
+
+    .hero-header {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      border-bottom: 1px solid rgba(99, 102, 241, 0.3);
+      padding: 2rem 0 1.5rem;
+    }
+
+    .hero-header h1 {
+      font-size: clamp(1.5rem, 4vw, 2.2rem);
+      font-weight: 700;
+      background: linear-gradient(90deg, #818cf8, #38bdf8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-header p {
+      color: #94a3b8;
+      font-size: 0.95rem;
+    }
+
+    .card-panel {
+      background: #1a1a2e;
+      border: 1px solid rgba(99, 102, 241, 0.2);
+      border-radius: 1.25rem;
+    }
+
+    #webcam-container canvas {
+      border-radius: 1rem;
+      border: 2px solid rgba(99, 102, 241, 0.4);
+      box-shadow: 0 0 30px rgba(99, 102, 241, 0.15);
+      width: 100% !important;
+      max-width: 300px;
+      height: auto !important;
+    }
+
+    .btn-start {
+      background: linear-gradient(135deg, #6366f1, #38bdf8);
+      border: none;
+      border-radius: 2rem;
+      padding: 0.75rem 2.5rem;
+      font-size: 1rem;
+      font-weight: 600;
+      color: #fff;
+      letter-spacing: 0.03em;
+      transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s;
+      box-shadow: 0 4px 20px rgba(99, 102, 241, 0.35);
+    }
+
+    .btn-start:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 28px rgba(99, 102, 241, 0.5);
+      opacity: 0.93;
+      color: #fff;
+    }
+
+    .btn-start:active:not(:disabled) {
+      transform: scale(0.97);
+    }
+
+    .btn-start:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .btn-start .spinner-border {
+      width: 1rem;
+      height: 1rem;
+      border-width: 2px;
+    }
+
+    .label-card {
+      background: #12122a;
+      border: 1px solid rgba(99, 102, 241, 0.15);
+      border-radius: 0.75rem;
+      padding: 0.85rem 1rem;
+      transition: border-color 0.3s;
+    }
+
+    .label-card:hover {
+      border-color: rgba(99, 102, 241, 0.4);
+    }
+
+    .label-name {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #c7d2fe;
+      margin-bottom: 0.4rem;
+    }
+
+    .label-pct {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #38bdf8;
+      min-width: 44px;
+      text-align: right;
+    }
+
+    .progress {
+      height: 10px;
+      background: rgba(255,255,255,0.07);
+      border-radius: 1rem;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      border-radius: 1rem;
+      background: linear-gradient(90deg, #6366f1, #38bdf8);
+      transition: width 0.35s ease;
+    }
+
+    .progress-bar.high {
+      background: linear-gradient(90deg, #22c55e, #38bdf8);
+    }
+
+    .progress-bar.mid {
+      background: linear-gradient(90deg, #f59e0b, #f97316);
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #4ade80;
+      display: inline-block;
+      box-shadow: 0 0 8px #4ade80;
+      animation: pulse-dot 1.2s infinite;
+    }
+
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(74, 222, 128, 0.1);
+      border: 1px solid rgba(74, 222, 128, 0.25);
+      border-radius: 2rem;
+      padding: 0.3rem 0.85rem;
+      font-size: 0.8rem;
+      color: #4ade80;
+      font-weight: 500;
+    }
+
+    .idle-placeholder {
+      width: 100%;
+      max-width: 300px;
+      height: 240px;
+      border-radius: 1rem;
+      border: 2px dashed rgba(99, 102, 241, 0.3);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      color: #4b5563;
+    }
+
+    .idle-placeholder i {
+      font-size: 2.5rem;
+      color: rgba(99, 102, 241, 0.4);
+    }
+
+    footer {
+      border-top: 1px solid rgba(99, 102, 241, 0.15);
+      color: #4b5563;
+      font-size: 0.8rem;
+    }
+  </style>
+</head>
+<body>
+
+  <header class="hero-header text-center">
+    <div class="container">
+      <h1><i class="bi bi-cpu me-2"></i>Site Murilo Otávio</h1>
+      <p class="mb-0">Reconhecimento de imagem em tempo real com Teachable Machine</p>
+    </div>
+  </header>
+
+  <main class="container py-4 py-md-5">
+    <div class="row g-4 justify-content-center">
+
+      <div class="col-12 col-lg-5">
+        <div class="card-panel p-4 h-100 d-flex flex-column align-items-center text-center">
+          <h5 class="mb-3" style="color:#818cf8; font-weight:600;">
+            <i class="bi bi-camera-video me-2"></i>Câmera ao Vivo
+          </h5>
+
+          <div id="webcam-container" class="mb-3 d-flex justify-content-center">
+            <div class="idle-placeholder" id="idle-placeholder">
+              <i class="bi bi-camera-video-off"></i>
+              <span style="font-size:0.85rem;">Câmera inativa</span>
+              <span style="font-size:0.75rem;">Clique em Iniciar para ativar</span>
+            </div>
+          </div>
+
+          <div id="status-area" class="mb-4" style="display:none;">
+            <span class="status-badge"><span class="status-dot"></span>Câmera ativa</span>
+          </div>
+
+          <button id="btn-init" class="btn btn-start" onclick="init()">
+            <i class="bi bi-play-circle me-2"></i>Iniciar Câmera
+          </button>
+          <p class="mt-2 mb-0" style="font-size:0.75rem; color:#4b5563;">
+            <i class="bi bi-shield-lock me-1"></i>Permissão de câmera será solicitada
+          </p>
+        </div>
+      </div>
+
+      <div class="col-12 col-lg-5">
+        <div class="card-panel p-4 h-100">
+          <h5 class="mb-4" style="color:#818cf8; font-weight:600;">
+            <i class="bi bi-bar-chart-line me-2"></i>Probabilidades por Classe
+          </h5>
+
+          <div id="label-container">
+            <div class="d-flex flex-column gap-3" style="opacity:0.35;">
+              <div class="label-card">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                  <span class="label-name">Aguardando...</span>
+                  <span class="label-pct">—</span>
+                </div>
+                <div class="progress"><div class="progress-bar" style="width:0%"></div></div>
+              </div>
+              <div class="label-card">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                  <span class="label-name">Aguardando...</span>
+                  <span class="label-pct">—</span>
+                </div>
+                <div class="progress"><div class="progress-bar" style="width:0%"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <footer class="text-center py-3">
+    <span>Powered by <strong style="color:#818cf8;">Teachable Machine</strong> &amp; TensorFlow.js &mdash; Murilo Otávio</span>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
+  <script>
+    const URL = "https://teachablemachine.withgoogle.com/models/3jn5fodpT/";
+    let model, webcam, labelContainer, maxPredictions;
+
+    async function init() {
+      const btn = document.getElementById("btn-init");
+      btn.disabled = true;
+      btn.innerHTML = `<span class="spinner-border me-2"></span>Carregando modelo...`;
+
+      try {
+        const modelURL = URL + "model.json";
+        const metadataURL = URL + "metadata.json";
+        model = await tmImage.load(modelURL, metadataURL);
+        maxPredictions = model.getTotalClasses();
+
+        const flip = true;
+        webcam = new tmImage.Webcam(300, 300, flip);
+        await webcam.setup();
+        await webcam.play();
+        window.requestAnimationFrame(loop);
+
+        document.getElementById("idle-placeholder").remove();
+        document.getElementById("webcam-container").appendChild(webcam.canvas);
+        document.getElementById("status-area").style.display = "block";
+
+        btn.innerHTML = `<i class="bi bi-stop-circle me-2"></i>Câmera Ativa`;
+        btn.style.background = "linear-gradient(135deg,#16a34a,#15803d)";
+
+        labelContainer = document.getElementById("label-container");
+        labelContainer.innerHTML = "";
+        const wrapper = document.createElement("div");
+        wrapper.className = "d-flex flex-column gap-3";
+
+        for (let i = 0; i < maxPredictions; i++) {
+          const card = document.createElement("div");
+          card.className = "label-card";
+          card.innerHTML = `
+            <div class="d-flex justify-content-between align-items-center mb-1">
+              <span class="label-name" id="lbl-name-${i}">Classe ${i+1}</span>
+              <span class="label-pct" id="lbl-pct-${i}">0%</span>
+            </div>
+            <div class="progress">
+              <div class="progress-bar" id="lbl-bar-${i}" role="progressbar" style="width:0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>`;
+          wrapper.appendChild(card);
+        }
+        labelContainer.appendChild(wrapper);
+
+      } catch (err) {
+        btn.disabled = false;
+        btn.innerHTML = `<i class="bi bi-exclamation-triangle me-2"></i>Erro — Tentar novamente`;
+        btn.style.background = "linear-gradient(135deg,#dc2626,#b91c1c)";
+        console.error(err);
+      }
+    }
+
+    async function loop() {
+      webcam.update();
+      await predict();
+      window.requestAnimationFrame(loop);
+    }
+
+    async function predict() {
+      const prediction = await model.predict(webcam.canvas);
+      for (let i = 0; i < maxPredictions; i++) {
+        const pct = (prediction[i].probability * 100).toFixed(1);
+        const val = parseFloat(pct);
+
+        const nameEl = document.getElementById(`lbl-name-${i}`);
+        const pctEl = document.getElementById(`lbl-pct-${i}`);
+        const barEl = document.getElementById(`lbl-bar-${i}`);
+
+        if (nameEl) nameEl.textContent = prediction[i].className;
+        if (pctEl) pctEl.textContent = pct + "%";
+        if (barEl) {
+          barEl.style.width = pct + "%";
+          barEl.setAttribute("aria-valuenow", val);
+          barEl.className = "progress-bar" + (val >= 70 ? " high" : val >= 40 ? " mid" : "");
+        }
+      }
+    }
+  </script>
+
+</body>
+</html>
